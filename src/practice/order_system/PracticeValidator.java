@@ -1,12 +1,10 @@
 package practice.order_system;
 
+import practice.order_system.mapper.OrderMapper;
 import practice.order_system.model.Product;
 import practice.order_system.model.User;
-import practice.order_system.repository.InMemoryRepository;
 import practice.order_system.service.OrderParser;
 import practice.order_system.service.OrderService;
-
-import java.util.List;
 
 /**
  * [자동 검증기]
@@ -28,15 +26,17 @@ public class PracticeValidator {
         System.out.print("[Mission 1: 문자열 파싱] -> ");
         try {
             OrderParser parser = new OrderParser();
-            String testLog = "ORD999|user1|PROD001:2|SALE10";
+            String testLog = "ORD999|user1|PROD001:2,PROD002:1|SALE10";
             OrderParser.ParsedOrder res = parser.parse(testLog);
 
             if (res != null &&
                     "ORD999".equals(res.orderId) &&
                     "user1".equals(res.userId) &&
-                    res.items.size() == 1 &&
+                    res.items.size() == 2 &&
                     "PROD001".equals(res.items.get(0).productId) &&
                     res.items.get(0).quantity == 2 &&
+                    "PROD002".equals(res.items.get(1).productId) &&
+                    res.items.get(1).quantity == 1 &&
                     "SALE10".equals(res.couponCode)) {
                 System.out.println("✅ PASS");
             } else {
@@ -50,12 +50,12 @@ public class PracticeValidator {
     private static void validateMission2() {
         System.out.print("[Mission 2: 해시 조회] -> ");
         try {
-            InMemoryRepository repo = new InMemoryRepository();
-            repo.saveUser(new User("testUser", "테스터", "GOLD", true));
-            repo.saveProduct(new Product("testProd", "테스트상품", "카테고리", 1000));
+            OrderMapper mapper = new OrderMapper();
+            mapper.insertUser(new User("testUser", "테스터", "GOLD", true));
+            mapper.insertProduct(new Product("testProd", "테스트상품", "카테고리", 1000));
 
-            User user = repo.findUserById("testUser");
-            Product prod = repo.findProductById("testProd");
+            User user = mapper.selectUserById("testUser");
+            Product prod = mapper.selectProductById("testProd");
 
             if (user != null && "테스터".equals(user.getName()) &&
                     prod != null && "테스트상품".equals(prod.getName())) {
@@ -71,9 +71,9 @@ public class PracticeValidator {
     private static void validateMission3() {
         System.out.print("[Mission 3: 비즈니스 로직] -> ");
         try {
-            InMemoryRepository repo = new InMemoryRepository();
-            repo.saveUser(new User("goldUser", "부자", "GOLD", true));
-            repo.saveProduct(new Product("PROD", "비싼거", "전자", 100000));
+            OrderMapper mapper = new OrderMapper();
+            mapper.insertUser(new User("goldUser", "부자", "GOLD", true));
+            mapper.insertProduct(new Product("PROD", "비싼거", "전자", 100000));
 
             OrderParser.ParsedOrder order = new OrderParser.ParsedOrder();
             order.userId = "goldUser";
@@ -83,7 +83,7 @@ public class PracticeValidator {
             item.quantity = 1;
             order.items.add(item);
 
-            OrderService service = new OrderService(repo);
+            OrderService service = new OrderService(mapper);
             int price = service.processOrder(order);
 
             // 기대 금액: 100,000 * 0.8(GOLD) * 0.9(SALE10) = 72,000
