@@ -27,7 +27,7 @@ public class InMemoryRepository {
      */
     public User findUserById(String id) {
         // 여기에 로직 작성 (Hash 연습)
-        return userMap.get(id);
+        return null;
     }
 
     /**
@@ -35,6 +35,6 @@ public class InMemoryRepository {
      */
     public Product findProductById(String id) {
         // 여기에 로직 작성 (Hash 연습)
-        return productMap.get(id);
+        return null;
     }
 }

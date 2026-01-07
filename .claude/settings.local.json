@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(java practice.order_system.PracticeValidator:*)"
+    ]
+  }
+}

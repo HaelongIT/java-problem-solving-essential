@@ -70,9 +70,30 @@ public class PracticeValidator {
 
     private static void validateMission3() {
         System.out.print("[Mission 3: 비즈니스 로직] -> ");
-        System.out.println("ℹ️ (OrderService 구현 후 PracticeRunner를 통해 직접 확인하세요)");
-        // 비즈니스 로직은 출력 결과나 DB 상태 변화를 봐야 하므로
-        // 여기서는 흐름이 끊기지 않는지만 체크하거나,
-        // 혹은 특정 등급의 가격 계산 결과를 검증하는 코드를 추가할 수 있습니다.
+        try {
+            InMemoryRepository repo = new InMemoryRepository();
+            repo.saveUser(new User("goldUser", "부자", "GOLD", true));
+            repo.saveProduct(new Product("PROD", "비싼거", "전자", 100000));
+
+            OrderParser.ParsedOrder order = new OrderParser.ParsedOrder();
+            order.userId = "goldUser";
+            order.couponCode = "SALE10";
+            OrderParser.ParsedOrder.Item item = new OrderParser.ParsedOrder.Item();
+            item.productId = "PROD";
+            item.quantity = 1;
+            order.items.add(item);
+
+            OrderService service = new OrderService(repo);
+            int price = service.processOrder(order);
+
+            // 기대 금액: 100,000 * 0.8(GOLD) * 0.9(SALE10) = 72,000
+            if (price == 72000) {
+                System.out.println("✅ PASS");
+            } else {
+                System.out.println("❌ FAIL (계산된 금액(" + price + ")이 기대값(72000)과 다름)");
+            }
+        } catch (Exception e) {
+            System.out.println("❌ FAIL (에러 발생: " + e.getMessage() + ")");
+        }
     }
 }

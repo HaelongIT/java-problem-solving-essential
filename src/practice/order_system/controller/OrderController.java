@@ -33,9 +33,9 @@ public class OrderController {
             }
 
             // 2. 서비스 로직 실행 (구현/해시 연습부 호출)
-            orderService.processOrder(parsedOrder);
+            int finalPrice = orderService.processOrder(parsedOrder);
 
-            return "200 OK: 주문이 성공적으로 처리되었습니다.";
+            return "200 OK: 주문이 성공적으로 처리되었습니다. (최종 금액: " + finalPrice + "원)";
         } catch (IllegalArgumentException e) {
             return "400 BAD REQUEST: " + e.getMessage();
         } catch (Exception e) {

@@ -57,11 +57,11 @@ practice.order_system
 
 ### 3단계: 비즈니스 규칙 적용 (Implementation Practice)
 - **대상 파일**: `service/OrderService.java`
-- **미션**: 다음의 복잡한 실무 규칙을 코드로 녹여내세요.
+- **미션**: 다음의 복잡한 실무 규칙을 코드로 녹여내고 **최종 금액을 리턴**하세요.
     - 유효한 사용자인가? (존재 여부, 활성 상태 확인)
     - 회원 등급별 할인율 적용 (GOLD 20%, SILVER 10%)
-    - 추가 쿠폰(SALE10) 중복 할인 계산
-- **포인트**: 예외 상황(Exception)을 고려하고, 조건문(`if-else`)을 지저분하지 않게 배치하는 연습을 합니다.
+    - 추가 쿠폰(SALE10) 중복 할인 계산 (할인된 금액에서 다시 할인)
+- **포인트**: 예외 상황(Exception)을 고려하고, 조건문(`if-else`)을 지저분하지 않게 배치하는 연습을 합니다. `PracticeValidator`가 이 리턴값을 검증합니다.
 
 ### 4단계: 시스템 가동 (End-to-End)
 - **대상 파일**: `PracticeRunner.java`
