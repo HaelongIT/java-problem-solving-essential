@@ -3,11 +3,41 @@
 이 프로젝트는 현업에서 가장 많이 쓰이는 **문자열 처리, 해시 활용, 비즈니스 로직 구현** 능력을 한 번에 기르기 위해 설계되었습니다.
 
 ## 📂 연습용 아키텍처
+
 실무와 동일하게 **계층형 구조(Layered Architecture)**로 구성되어 있습니다.
-- `controller`: 요청을 받고 응답을 반환하는 관문 (API 흉내)
-- `service`: 핵심 비즈니스 로직 및 데이터 가공 (요리사 역할)
-- `repository`: 데이터를 저장하고 조회하는 계층 (DB 흉내)
-- `model`: 시스템에서 사용하는 데이터 객체 (DTO/Entity)
+
+### 1. 데이터 흐름도 (Request Flow)
+```text
+[Client: PracticeRunner] 
+      │
+      ▼
+[Controller: OrderController] --- (Parser 호출) ──▶ [Service: OrderParser] (String 파싱)
+      │                                                   │
+      ▼                                                   ▼
+[Service: OrderService] (Implementation: 비즈니스 로직) ◀───┘
+      │
+      ▼
+[Repository: InMemoryRepository] (Hash: 데이터 조회)
+      │
+      ▼
+[Model: User, Product, ParsedOrder] (Data)
+```
+
+### 2. 프로젝트 폴더 구조 (Directory Structure)
+```text
+practice.order_system
+├── controller
+│   └── OrderController.java    # API 진입점, 예외 처리 응답
+├── service
+│   ├── OrderParser.java        # 미션 1: 문자열 파싱
+│   └── OrderService.java       # 미션 3: 비즈니스 로직 구현
+├── repository
+│   └── InMemoryRepository.java # 미션 2: HashMap 활용 데이터 검색
+├── model
+│   ├── User.java               # 사용자 정보 (Entity)
+│   └── Product.java            # 상품 정보 (Entity)
+└── PracticeRunner.java         # 전체 실행 및 테스트
+```
 
 ---
 
@@ -37,6 +67,15 @@
 - **대상 파일**: `PracticeRunner.java`
 - **미션**: `main` 함수 안에서 `orderController`를 호출하는 주석을 해제하고 시스템을 실행하세요.
 - **확인**: 콘솔 창에 각 주문 로그별로 `200 OK` 또는 `400 BAD REQUEST` 결과가 의도대로 찍히는지 확인합니다.
+
+---
+
+## ✅ 자동 검증기 사용법 (PracticeValidator)
+내가 짠 코드가 정답인지 일일이 확인하기 번거롭다면 **`PracticeValidator`**를 실행하세요.
+
+1.  **`practice.order_system.PracticeValidator`** 클래스를 실행합니다.
+2.  콘솔창에 **✅ PASS**가 뜨는지 확인합니다.
+3.  만약 **❌ FAIL**이 뜬다면, 해당 미션의 요구사항에 맞게 다시 구현해 보세요.
 
 ---
 
