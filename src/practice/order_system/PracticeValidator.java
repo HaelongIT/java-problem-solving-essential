@@ -73,27 +73,64 @@ public class PracticeValidator {
         try {
             OrderMapper mapper = new OrderMapper();
             mapper.insertUser(new User("goldUser", "부자", "GOLD", true));
+            mapper.insertUser(new User("inactiveUser", "비활성", "GOLD", false));
             mapper.insertProduct(new Product("PROD", "비싼거", "전자", 100000));
 
-            OrderParser.ParsedOrder order = new OrderParser.ParsedOrder();
-            order.userId = "goldUser";
-            order.couponCode = "SALE10";
-            OrderParser.ParsedOrder.Item item = new OrderParser.ParsedOrder.Item();
-            item.productId = "PROD";
-            item.quantity = 1;
-            order.items.add(item);
-
             OrderService service = new OrderService(mapper);
-            int price = service.processOrder(order);
 
-            // 기대 금액: 100,000 * 0.8(GOLD) * 0.9(SALE10) = 72,000
-            if (price == 72000) {
-                System.out.println("✅ PASS");
-            } else {
+            // 테스트 1: 정상 케이스 (GOLD + SALE10)
+            OrderParser.ParsedOrder order1 = createTestOrder("goldUser", "PROD", 1, "SALE10");
+            int price = service.processOrder(order1);
+            if (price != 72000) {
                 System.out.println("❌ FAIL (계산된 금액(" + price + ")이 기대값(72000)과 다름)");
+                return;
             }
+
+            // 테스트 2: 존재하지 않는 사용자
+            OrderParser.ParsedOrder order2 = createTestOrder("unknown", "PROD", 1, "NONE");
+            try {
+                service.processOrder(order2);
+                System.out.println("❌ FAIL (존재하지 않는 사용자 예외 처리 안 됨)");
+                return;
+            } catch (IllegalArgumentException e) {
+                // 정상: 예외가 발생해야 함
+            }
+
+            // 테스트 3: 비활성 사용자
+            OrderParser.ParsedOrder order3 = createTestOrder("inactiveUser", "PROD", 1, "NONE");
+            try {
+                service.processOrder(order3);
+                System.out.println("❌ FAIL (비활성 사용자 예외 처리 안 됨)");
+                return;
+            } catch (IllegalArgumentException e) {
+                // 정상: 예외가 발생해야 함
+            }
+
+            // 테스트 4: 존재하지 않는 상품
+            OrderParser.ParsedOrder order4 = createTestOrder("goldUser", "INVALID", 1, "NONE");
+            try {
+                service.processOrder(order4);
+                System.out.println("❌ FAIL (존재하지 않는 상품 예외 처리 안 됨)");
+                return;
+            } catch (IllegalArgumentException e) {
+                // 정상: 예외가 발생해야 함
+            }
+
+            System.out.println("✅ PASS");
         } catch (Exception e) {
-            System.out.println("❌ FAIL (에러 발생: " + e.getMessage() + ")");
+            System.out.println("❌ FAIL (예상치 못한 에러: " + e.getMessage() + ")");
         }
+    }
+
+    // 테스트용 주문 객체 생성 헬퍼 메서드
+    private static OrderParser.ParsedOrder createTestOrder(String userId, String productId, int quantity, String couponCode) {
+        OrderParser.ParsedOrder order = new OrderParser.ParsedOrder();
+        order.userId = userId;
+        order.couponCode = couponCode;
+        OrderParser.ParsedOrder.Item item = new OrderParser.ParsedOrder.Item();
+        item.productId = productId;
+        item.quantity = quantity;
+        order.items.add(item);
+        return order;
     }
 }

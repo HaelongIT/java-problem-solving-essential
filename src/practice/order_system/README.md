@@ -61,7 +61,7 @@ practice.order_system
     - 유효한 사용자인가? (`OrderMapper`를 통해 존재 여부, 활성 상태 확인)
     - 회원 등급별 할인율 적용 (GOLD 20%, SILVER 10%)
     - 추가 쿠폰(SALE10) 중복 할인 계산 (할인된 금액에서 다시 할인)
-- **포인트**: 예외 상황(Exception)을 고려하고, `OrderMapper`와의 협업을 통해 비즈니스 로직을 완성합니다. `PracticeValidator`가 이 결과를 검증합니다.
+- **포인트**: 검증 실패 시(사용자 없음, 비활성, 상품 없음) **반드시 `IllegalArgumentException`을 던져야** 합니다. `OrderMapper`와의 협업을 통해 비즈니스 로직을 완성하세요. `PracticeValidator`가 예외 처리까지 포함하여 검증합니다.
 
 ### 4단계: 시스템 가동 (End-to-End)
 - **대상 파일**: `PracticeRunner.java`
